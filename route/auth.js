@@ -8,7 +8,7 @@ router.get("/", (req, res, next) => {
   if (session.userid) {
     res.json({ result: 1 });
   } else {
-    next(new errors.AppError(204, "인증에러"));
+    next(new errors.AppError(401, "인증에러"));
   }
 });
 
@@ -25,8 +25,7 @@ router.post("/login", (req, res, next) => {
     user.findOne({ userid: req.body.userid }).then(result => {
       if (result == null) {
         console.log("r3");
-        //res.status(204).end();
-        res.json({ result: 204 });
+        next(new errors.AppError(401, "인증에러"));
       } else if (result.passwd === req.body.password) {
         session.userid = req.body.userid;
         session.passwd = req.body.password;
@@ -34,7 +33,7 @@ router.post("/login", (req, res, next) => {
         res.json({ result: 1 });
       } else {
         //res.status(204).end();
-        res.json({ result: 204 });
+        next(new errors.AppError(401, "인증에러"));
       }
     });
   }
@@ -45,9 +44,17 @@ router.get("/login", (req, res, next) => {
   if (session.userid) {
     res.json({ result: 1 });
   } else {
-    next(new errors.AppError(204, "인증에러"));
+    next(new errors.AppError(401, "인증에러"));
   }
 });
 
-router.get("/logout", (req, res, next) => {});
+router.get("/logout", (req, res, next) => {
+  console.log('sessionid');
+  if(req.session.userid) {
+    res.json({ result: 1 });
+    req.session.destroy();
+  } else {
+    next(new errors.AppError(403, "금지됨"));
+  }
+});
 module.exports = router;

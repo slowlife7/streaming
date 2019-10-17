@@ -3,55 +3,11 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            * { margin:0; padding: 0; }
-            li { list-style: none; }
-            a { text-decoration: none; }
-            input:focus {outline:none;}
-            
-            header { position: relative; text-align: center; background-color: #337ab7; color:#ffffff; padding-bottom: 10px; }
-            header > .header_main { margin-bottom: 10px;}
-            header > .header_left { position:absolute; top: 10px; left:5px; width: 40px; text-align: center;}
-            header > .header_left a { color: #ffffff; }
-            header > .header_right { position:absolute; top: 10px; right:10px; width: 40px; text-align: center; }
-            header > .header_search { position:relative; overflow: hidden; width:100%; height:50px; }
-            header > .header_search input { float:left; font-size:1.5em; width:100%; height: 48px; border: 5px solid #337ab7; box-sizing: border-box;}
-            header > .header_search img { position:absolute; right:0; top:0; height:48px;}
-
-            #toggle { display: none; }
-            #toggle:checked ~ .wrap_gnb  { display: block; }
-
-            .wrap_gnb { display: none; }
-            .wrap_gnb > .gnb ul { overflow: hidden; background-color: #337ab7; }
-            .wrap_gnb > .gnb ul li { float:left; padding: 4px 15px; font-size:1.1em; }
-            .wrap_gnb > .gnb ul li a { color: #ffffff; }
-
-            content { width: 100%; }
-            content > .wrap_content { margin:20px; }
-            content > .wrap_content ul li { position:relative; width: 100%; height: 50px; line-height: 50px; border-bottom: 1px solid #cccccc; }
-            content > .wrap_content ul li > .post_title { float :left;  width:60%; padding-left: 20px; border-right:0; border-left: 5px solid lightblue; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:0.8em;}
-            content > .wrap_content ul li > .post_summary { float :left; width:10%; margin-right:10px; border-left:0; border-right: 0; text-align: center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-            content > .wrap_content ul li > .post_author { float :left;  width:20%; border-left: 0; font-size: 0.6em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-
-            content > .pagination_content  { text-align: center;}
-            content > .pagination_content ul { display: inline-block; padding-left: 0; text-align: center;}
-            content > .pagination_content ul li { display: inline; text-align: center;}
-            content > .pagination_content ul li a { font-size:1.2em; padding: 5px 12px; color:dimgray; }
-            content > .pagination_content ul li a:hover { color:honeydew; }
-
-            .login_wrap { width: 100%; height: 400px; }
-            .login_wrap > .login_form { width: 50%; margin:0 auto; border: 1px solid #cccccc; margin-top:30px;}
-            .login_wrap > .login_form > .login_header { margin-bottom:30px; text-align: center; border-bottom: 1px solid #cccccc; color:#cccccc;}
-            .login_wrap > .login_form > .login_content { margin: 10px 30px; }
-            .text_full { width:100%; display:block; color: #555; background-color: #ffffff; font-size:1.4em; border:1px solid #cccccc; box-sizing: border-box; padding: 5px 10px; }
-            .login_wrap > .login_form > .login_content form:nth-child(3) { display:inline;}
-            .login_wrap > .login_form input:nth-child(2) { margin-bottom: 10px;}
-            .login_wrap > .login_form input:last-child { margin-top: 10px; background-color:#337ab7; color:#fafafa; }
-
-        </style>
+        <link rel="stylesheet" type="text/css" href="/css/board.css"/>
     </head>
     <body>
         <input id="toggle" type="checkbox"/>
+
         <header>
             <div class="header_left">
                 <label for="toggle" onclick=""><img src="/assets/iconmonstr-menu-1-32.png" alt="Menu"></label>
@@ -60,13 +16,14 @@
                 <h1>LIVE</h1>
             </div>
             <div class="header_right">
-                <a href="#"></a><img src="/assets/iconmonstr-log-out-2-32.png" alt="Login"></a>
+                <a href="#" id="/auth/login"><img src="/assets/iconmonstr-log-out-2-32.png" alt="Login"></a>
             </div>
             <div class="header_search">
                 <input type="text"/>
                 <img src="/assets/iconmonstr-magnifier-4-48.png" alt="search"/>
             </div>
         </header>
+
         <div class="wrap_gnb">
             <div class="gnb">
                 <ul>
@@ -93,240 +50,6 @@
 
         </footer>
 
-        <script>
-
-            window.addEventListener('DOMContentLoaded', function() {
-
-              let navURL = "";
-              let category = "";
-
-              function httpGetRequest(url, responseType, method, data) {
-                return new Promise((resolve, reject) => {
-                    try {
-                    const xhr = new XMLHttpRequest();
-                    const mth = method || "GET";
-                    console.log('mth:',mth);
-                    xhr.open(mth, url);
-                    xhr.setRequestHeader("Content-Type", "application/json");
-                    console.log(url.split("?")[0]);
-                    xhr.responseType = responseType || "json";
-                    xhr.onerror = event => {
-                        reject(`Network error: ${event}`);
-                    };
-                    xhr.onload = () => {
-                        if (xhr.status === 200) {
-                        resolve({...xhr.response, url:url.split("?")[0], query : navURL});
-                        } else {
-                        reject(`XHR load error: ${xhr.statusText}`);
-                        }
-                    };
-                    console.log(data);
-                    xhr.send(data);
-                    } catch (err) {
-                    reject(err.message);
-                    }
-                });
-              };
-
-              httpGetRequest('/auth', 'json', 'GET')
-              .then( response => {
-                if(response.result === 1) {
-                  const login = document.querySelector('.header_right > img');
-                  login.setAttribute('src', "/assets/iconmonstr-log-out-8-32.png");
-                }
-              })
-              .catch( err => {
-
-              })
-
-              const headerRight = document.querySelector('header > .header_right');
-              const headerSearch = document.querySelector('.header_search > img');
-              const wrapContent = document.querySelector('.wrap_content');
-              const paginationContent = document.querySelector( '.pagination_content' );
-              const gnb = document.querySelector('.wrap_gnb > .gnb ul');
-             
-              headerRight.addEventListener('click', function(target) {
-                const content = document.querySelector('content');
-                content.innerHTML = "";
-                content.insertAdjacentHTML('afterbegin', getLoginForm());
-              });
-
-              headerSearch.addEventListener('click', function(target) {
-                const search_txt = document.querySelector('.header_search > input');
-                navURL = "query="+search_txt.value;
-                httpGetRequest('/posts?'+navURL)
-                  .then( (result) => {
-                    
-                    paintPosts(result);
-                    paintPagination(result);
-                  });
-              });
-
-              gnb.addEventListener('click', function(target) {
-                navURL = "";
-                category = target.target.id;
-                httpGetRequest('/posts'+category+'?'+navURL)
-                  .then( (result) => {
-                    
-                    paintPosts(result);
-                    paintPagination(result);
-                  });
-                //console.log(target.target.id);
-              });
-
-              wrapContent.addEventListener('click', function(target) {
-                const element = target.target;
-                console.dir(element);
-                if(element.parentElement.className !== 'post_title') {
-                  return;
-                }
-                
-                wrapContent.innerHTML = "";
-                paginationContent.innerHTML = "";
-              
-                httpGetRequest('/auth/login')
-                  .then( (result) => {
-                    console.log(result);
-                    if(result.result === 204) {
-                      wrapContent.insertAdjacentHTML('afterbegin', getLoginForm());
-
-                      document.querySelector('.login_content input:last-child').addEventListener('click', function(target) {
-                        const data = {
-                          userid: document.querySelector('.login_content input:nth-child(1)').value,
-                          password : document.querySelector('.login_content input:nth-child(2)').value
-                        };
-
-                        console.log(data);
-
-                        httpGetRequest('/auth/login', 'json', 'POST', JSON.stringify(data))
-                        .then( response => {
-                          
-                          (response.result === 1 ) && (() =>{ 
-                            
-                           
-                            location.href = '/';
-
-                           })(); 
-                          //location.href = '/';
-                          console.log(response);
-                        })
-                        .catch( err => {
-                          console.log(err);
-                        });
-                      });
-
-                    } else {
-                      wrapContent.insertAdjacentHTML('afterbegin', getMediaForm(encodeURI(element.innerText+'.mp4')));
-                    }
-                  }); 
-
-              });
-
-              paginationContent.addEventListener('click', function(target) {
-                httpGetRequest(target.target.id)
-                  .then( (result) => {
-                    paintPosts(result);
-                    paintPagination(result);
-                  });
-              });
-
-              httpGetRequest('/posts')
-              .then( (result) => {
-
-                navURL = "";
-                category = "";
-
-                paintPosts(result);
-                paintPagination(result);
-              });
-
-              const paintPosts = function( json ) {
-                wrapContent.innerHTML = "";
-                const ul = document.createElement('ul');
-                  json.items.forEach((item) => {
-                  ul.insertAdjacentHTML('beforeend', setPostContent(item));
-                });
-                wrapContent.appendChild(ul);
-              }
-              
-              const paintPagination = function ( json ) {
-              
-                console.dir(json);
-                paginationContent.innerHTML = "";
-
-                const ul = document.createElement('ul');
-                paginationContent.appendChild(ul);
-
-                json.prev && ul.insertAdjacentHTML('beforeend', getPageBox(json.url + '?pageNo='+json.prev+'&'+json.query, '<<'));
-
-                for( let i = json.first; i <= json.last; i++ ) {
-                  ul.insertAdjacentHTML('beforeend', getPageBox(json.url + '?pageNo='+i+'&'+json.query, i));
-                }
-
-                json.next && ul.insertAdjacentHTML('beforeend', getPageBox(json.url + '?pageNo='+json.next+'&'+json.query, '>>'));
-              }
-            });
-
-            const requestLogin = function() {
-               /* const data = {
-                  userid: document.querySelector('.login_content input:nth-child(1)').textContent,
-                  password : document.querySelector('.login_content input:nth-child(2)').textContent
-                };
-
-                httpGetRequest('/login', 'POST', data)
-                .then( response => {
-                  console.log(response);
-                })
-                .catch( err => {
-
-                });*/
-              }
-
-            
-            const getPageBox = function ( url, arrow) {
-                return '<li> \
-                          <a href="#" id="'+url+'">'+arrow+'</a>\
-                        </li>';
-            }
-
-            const setPostContent = function( json ) {
-              return '<li> \
-                <div class="post_title"> \
-                  <a href="#">'+json.title+'</a> \
-                </div>\
-                <div class="post_summary"> \
-                Billy\
-                </div>\
-                <div class="post_author">'+json.created+'</div>\
-              </li>';
-            }
-
-            const getLoginForm = function() {
-              return  '<div class="login_wrap">\
-                        <div class="login_form"> \
-                          <div class="login_header"> \
-                            <h1>로그인</h1>         \
-                          </div>                      \
-                          <div class="login_content">     \
-                              <input class="text_full" name="userid" type="text" placeholder="아이디">\
-                              <input class="text_full" name="password" type="password" placeholder="비밀번호">\
-                              <input name="autologin" type="checkbox">로그인 유지\
-                              <input class="text_full" type="button" value="로그인">\
-                          </div> \
-                        </div>\
-                      </div>';
-            }
-
-            const getMediaForm = function(path) {
-
-              const fullPath = '/video/'+path;
-              return '<div> \
-                        <video width="100%" height="auto" controls> \
-                          <source src="'+fullPath+'" type="video/mp4"> \
-                          </source>\
-                        </video>\
-                      </div>';
-            }
-        </script>
+        <script type="text/javascript" src="/javascript/board.js"> </script>
     </body>
 </html>

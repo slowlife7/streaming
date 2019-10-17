@@ -11,6 +11,7 @@ const errors = require("./public/javascript/error");
 const indexRouter = require("./route/index");
 const authRouter = require("./route/auth");
 const postRouter = require("./route/post");
+const streamRouter = require("./route/stream");
 
 mongoose.Promise = global.Promise;
 mongoose
@@ -58,6 +59,8 @@ app.use("*.ico", FaviconHandler);
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/posts", postRouter);
+app.use("/stream", streamRouter);
+
 app.use(ErrorHandler);
 app.use(CatchError);
 
@@ -66,8 +69,6 @@ app.listen(3000, function() {
 });
 
 function FaviconHandler(req, res, next) {
-  console.log("favicon");
-  console.log(req.path);
   res.status(200).end();
 }
 
@@ -77,12 +78,11 @@ function ErrorHandler(req, res, next) {
 }
 
 function CatchError(err, req, res, next) {
-  console.log("Can not found any router");
-  console.log(err.status);
   if (err instanceof errors.AppError) {
-    console.log(err.status);
-    //res.json({ result: err.status });
-    res.json({ result: 204 });
-    return;
+    res.json({ result: err.status });
+  } else if ( err instanceof errors.QueryError) {
+
+  } else if( err instanceof errors.HttpError) {
+    res.status(err.status).end();
   }
 }

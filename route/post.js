@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const errors = require("../public/javascript/error");
 const Video = require("../model/video");
 const queryapi = require("../public/javascript/queryAPI")(Video);
 
@@ -46,7 +47,7 @@ router.get(
         res.json({ ...result, ...q });
       })
       .catch(err => {
-        next(err);
+        next(new errors.QueryError(err.name, err.message));
       });
   },
   (req, res, next) => {
@@ -64,7 +65,7 @@ router.get(
         res.json({ ...result, ...q });
       })
       .catch(err => {
-        next(err);
+        next(new errors.QueryError(err.name, err.message));
       });
   }
 );
@@ -101,7 +102,7 @@ router.get(
         res.json({ ...result, ...q });
       })
       .catch(err => {
-        next(err);
+        next(new errors.QueryError(err.name, err.message));
       });
   },
   (req, res, next) => {
@@ -120,7 +121,7 @@ router.get(
         res.json({ ...result, ...q });
       })
       .catch(err => {
-        next(err);
+        next(new errors.QueryError(err.name, err.message));
       });
   }
 );
