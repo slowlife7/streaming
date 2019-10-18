@@ -6,6 +6,7 @@ const fs = require("fs");
 const morgan = require("morgan");
 const rfs = require("rotating-file-stream");
 const moment = require("moment");
+const https = require('https');
 const errors = require("./public/javascript/error");
 
 const indexRouter = require("./route/index");
@@ -64,8 +65,13 @@ app.use("/stream", streamRouter);
 app.use(ErrorHandler);
 app.use(CatchError);
 
-app.listen(3000, function() {
-  console.log("app listening on port 3000!");
+const ssl_option = {
+	key : fs.readFileSync('/home/node/ssl/privkey.pem'),
+        cert : fs.readFileSync('/home/node/ssl/cert.pem')
+};
+
+https.createServer(ssl_option, app).listen(7001, function() {
+  console.log("app listening on port 7001!");
 });
 
 function FaviconHandler(req, res, next) {
